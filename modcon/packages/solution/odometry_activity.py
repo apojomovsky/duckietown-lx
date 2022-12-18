@@ -51,8 +51,32 @@ def pose_estimation(
     """
 
     # These are random values, replace with your own
-    x_curr = np.random.random()
-    y_curr = np.random.random()
-    theta_curr = np.random.random()
+
+    d_left  = delta_phi_left * R
+    d_right = delta_phi_right * R
+    delta_distance = (d_right + d_left) / 2.
+    delta_theta = (d_right - d_left) / baseline
+
+    delta_x = delta_distance * np.cos(delta_theta)
+    delta_y = delta_distance * np.sin(delta_theta)
+
+    o_to_r = np.array([
+        [np.cos(theta_prev), -np.sin(theta_prev), x_prev],
+        [np.sin(theta_prev), np.cos(theta_prev), y_prev],
+        [0, 0, 1]
+    ])
+
+    r_to_rfinal = np.array([
+        [np.cos(delta_theta), -np.sin(delta_theta), delta_x],
+        [np.sin(delta_theta), np.cos(delta_theta), delta_y],
+        [0, 0, 1],
+    ])
+
+    o_to_rfinal = np.dot(o_to_r, r_to_rfinal)
+
+    x_curr = o_to_rfinal[0][2]
+    y_curr = o_to_rfinal[1][2]
+    theta_curr = np.arctan2(o_to_rfinal[1][0], o_to_rfinal[0][0])
+
     # ---
     return x_curr, y_curr, theta_curr

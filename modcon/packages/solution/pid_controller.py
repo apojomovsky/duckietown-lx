@@ -16,7 +16,7 @@ def PIDController(
     Args:
         v_0:        linear Duckiebot speed (given).
         theta_ref:  reference heading pose.
-        theta_hat:  the current estiamted theta.
+        theta_hat:  the current estimated theta.
         prev_e:     tracking error at previous iteration.
         prev_int:   previous integral error term.
         delta_t:    time interval since last call.
@@ -27,11 +27,27 @@ def PIDController(
         e_int:   current integral error (automatically becomes prev_int_y at next iteration).
     """
 
-    # TODO: these are random values, you have to implement your own PID controller in here
-    omega = np.random.uniform(-8.0, 8.0)
-    e = np.random.random()
-    e_int = np.random.random()
-    # Hint: print for debugging
-    # print(f"\n\nDelta time : {delta_t} \nE : {np.rad2deg(e)} \nE int : {e_int} \nPrev e : {prev_e} \nU : {u} \nTheta hat: {np.rad2deg(theta_hat)} \n")
-    # ---
+    # Tracking error
+    e = theta_ref - theta_hat
+
+    # integral of the error
+    e_int = prev_int + (e * delta_t)
+
+    # anti-windup - preventing the integral error from growing too much
+    e_int = sorted((-2, e_int, 2))[1]
+
+    # derivative of the error
+    e_der = (e - prev_e) * delta_t
+
+    # controller coefficients
+    Kp = 2
+    Ki = 0.3
+    Kd = 0.1
+
+    # PID controller for omega
+    omega = (Kp * e) + (Ki * e_int) + (Kd * e_der)
+
+    u = [v_0, omega]
+    print(f"\n\nDelta time : {delta_t} \nE : {np.rad2deg(e)} \nE int : {e_int} \nPrev e : {prev_e} \nU : {u} \nTheta hat: {np.rad2deg(theta_hat)} \n")
+
     return v_0, omega, e, e_int

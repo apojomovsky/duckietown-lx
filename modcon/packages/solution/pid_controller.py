@@ -34,14 +34,14 @@ def PIDController(
     e_int = prev_int + (e * delta_t)
 
     # anti-windup - preventing the integral error from growing too much
-    e_int = sorted((-2, e_int, 2))[1]
+    e_int = max(min(e_int, 2), -2)
 
     # derivative of the error
-    e_der = (e - prev_e) * delta_t
+    e_der = (e - prev_e) / delta_t
 
     # controller coefficients
-    Kp = 2
-    Ki = 0.3
+    Kp = 5
+    Ki = 0.2
     Kd = 0.1
 
     # PID controller for omega

@@ -37,15 +37,12 @@ def PIDController(
     e_der = (e - prev_e_y) / delta_t
 
     # controller coefficients
-    Kp = 5
-    Ki = 0.2
-    Kd = 0.1
+    Kp = 4
+    Ki = 0.01
+    Kd = 15
 
-    # PID controller for y
-    y = (Kp * e) + (Ki * e_int) + (Kd * e_der)
-
-    # Calculate omega for the updated estimation of y
-    omega = np.arctan(y/0.2)
+    # PID controller for omega
+    omega = (Kp * e) + (Ki * e_int) + (Kd * e_der)
 
     # ---
     
